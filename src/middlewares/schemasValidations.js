@@ -1,9 +1,9 @@
+export function schemasValidations(schema) {
+    return (req, res, next) => {
+        const validation = schema.validate(req.body, {abortEarly: false});
+        const {error} = validation;
 
-export default function schemasValidations(schema) {
-    function validation(req, res, next) {
-        const validate = schema.validate(req.body);
-        if (validate.error) return res.status(422).send(validate.error.details[0].message);
+        if (error) return res.status(422).send(error.details.map(detail => detail.message));
         next();
     }
-    return validation;
 }

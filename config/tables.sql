@@ -1,1 +1,1 @@
--- CREATE DATABASE linkr
+CREATE DATABASE "linkr";

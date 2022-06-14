@@ -1,15 +1,18 @@
-// import pg from "pg";
-// import dotenv from "dotenv";
+import pg from 'pg';
+import dotenv from 'dotenv';
 
-// dotenv.config();
+dotenv.config();
+const { Pool } = pg;
 
-// const { Pool } = pg;
+const database = {
+    connectionString: process.env.DATABASE_URL
+};
 
-// const db = new Pool({
-//     connectionString: process.env.DATABASE_URL,
-//     ssl: {
-//         rejectUnauthorized: false
-//     }
-// });
+if(process.env.MODE === "PROD"){
+    database.ssl = {
+        rejectUnauthorized: false
+    }
+}
 
-// export default db;
+const db = new Pool(database);
+export default db;
