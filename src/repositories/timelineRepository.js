@@ -24,8 +24,11 @@ async function insertHashtag(postId, hashtag){
 
 async function getPosts(boolean){
     return db.query(`
-        SELECT * FROM "posts" WHERE "deleted" = $1
-        ORDER BY "createdAt" DESC LIMIT 20
+        SELECT p.*, SUM(l."postId") AS "likes"
+        FROM "posts" p
+        JOIN "likes" l ON l."postId" = p."id"
+        WHERE p."deleted" = $1
+        ORDER BY p."createdAt" DESC LIMIT 20
     `, [boolean]);
 }
 

@@ -33,10 +33,18 @@ export async function createPublication(req, res){
 
 export async function getPublications(req, res){
     try {
-        await timelineRepository.getPosts(false);
-        res.sendStatus(200);
+        const result = await timelineRepository.getPosts(false);
+        res.status(200).send(result.rows);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
     }
+}
+
+export async function updatePublication(req, res){
+    console.log('teste');
+}
+
+export async function deletePublication(req, res){
+    console.log('teste');
 }
