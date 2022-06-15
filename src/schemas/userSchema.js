@@ -1,6 +1,6 @@
 import joi from 'joi';
 
-const datasToRegisterValidade = joi.object({
+const vDatasToRegister = joi.object({
 
     email:joi.string().email().required(),
     password: joi.string().required(),
@@ -9,4 +9,4 @@ const datasToRegisterValidade = joi.object({
 
 })
 
-export default datasToRegisterValidade
+export default vDatasToRegister;

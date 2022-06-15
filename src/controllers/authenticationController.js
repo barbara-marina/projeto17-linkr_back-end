@@ -5,12 +5,10 @@ export async function createUser(req, res){
 
     const {email, username, password, picture_url} = req.body;
     const passCrypt = bcrypt.hashSync(password, 10);
-
-
     
     try {
         const user = await db.query(`SELECT * FROM users WHERE email = $1`, [`${email.toLowerCase()}`]);
-        if(user.rowCount !== 0) res.status(422).send('Email já cadastrado!');
+        if(user.rowCount !== 0) return res.status(422).send('Email já cadastrado!');
         
         db.query(`INSERT 
                     INTO users (email, password, username, picture)
