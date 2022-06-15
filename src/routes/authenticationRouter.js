@@ -7,4 +7,5 @@ const autheticationRouter = Router();
 autheticationRouter.post("/sign-up", checkEmailOnDB,createUser);
 
 
+
 export default autheticationRouter;
