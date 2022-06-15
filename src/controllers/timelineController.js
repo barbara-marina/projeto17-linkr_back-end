@@ -26,7 +26,8 @@ export async function createPublication(req, res){
 
 export async function getPublications(req, res){
     try {
-        console.log('teste');
+        await timelineRepository.getPosts(false);
+        res.sendStatus(200);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);

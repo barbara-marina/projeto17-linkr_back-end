@@ -22,10 +22,18 @@ async function insertHashtag(postId, hashtag){
     `, [postId, hashtag]);
 }
 
+async function getPosts(boolean){
+    return db.query(`
+        SELECT * FROM "posts" WHERE "deleted" = $1
+        ORDER BY "createdAt" DESC LIMIT 20
+    `, [boolean]);
+}
+
 const timelineRepository = {
     getHashtagsInDescription,
     insertPostUserDescription,
-    insertHashtag
+    insertHashtag,
+    getPosts
 };
 
 export default timelineRepository;
