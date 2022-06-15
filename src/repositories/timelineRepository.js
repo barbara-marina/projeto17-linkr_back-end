@@ -29,11 +29,20 @@ async function getPosts(boolean){
     `, [boolean]);
 }
 
+async function getPostByUrl(url, userId){
+    return db.query(`
+        SELECT * FROM "posts" 
+        WHERE "url" = $1 AND "userId" = $2 
+        ORDER BY "createdAt" DESC LIMIT 1
+    `, [url, userId]);
+}
+
 const timelineRepository = {
     getHashtagsInDescription,
     insertPostUserDescription,
     insertHashtag,
-    getPosts
+    getPosts, 
+    getPostByUrl
 };
 
 export default timelineRepository;

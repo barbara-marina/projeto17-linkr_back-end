@@ -3,9 +3,16 @@ import timelineRepository from "../repositories/timelineRepository.js";
 export async function createPublication(req, res){
     const {url, description} = req.body;
     const hashtags = timelineRepository.getHashtagsInDescription(description);
+    const userId = res.locals.user.id;
+    
     try {
         if(description.length > 0 && hashtags.length > 0){
             await timelineRepository.insertPostUserDescription(userId, url, description);
+
+            const lastPost = await timelineRepository.getPostByUrl(url, userId);
+            const [post] = lastPost;
+            const postId = post.id;
+
             for(const hashtag of hashtags){
                 timelineRepository.insertHashtag(postId, hashtag);
             }
