@@ -12,7 +12,8 @@ app.use(cors());
 app.use(json());
 app.use(router);
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT
+
 app.listen(port, () => {
     console.log(chalk.bold.cyanBright(`Server is up and runnig on port ${port}`));
 });
