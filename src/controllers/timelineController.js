@@ -55,7 +55,7 @@ export async function updatePublication(req, res){
         `, [id]);
         const [post] = postFind.rows;
 
-        const verifyPost = !post || post.deleted || postFind.rowCount !== 1 || post.userId !== user.id;
+        const verifyPost = !post || post.deleted || postFind.rowCount !== 1 || post.userId !== user.id || post.id !== Number(id);
         if(verifyPost) return res.sendStatus(401);
         
         const hashtagsAnterior = timelineRepository.getHashtagsInDescription(post.description);
@@ -65,7 +65,7 @@ export async function updatePublication(req, res){
             for(const hashtag of hashtagsAnterior){
                 await db.query(`
                     DELETE FROM "hashtags" WHERE "name" = $1 AND "postId" = $2
-                `, [hashtag, post.id]);
+                `, [hashtag, id]);
             }
         }
         if(description.length > 0 && hashtagsAtual.length > 0){
