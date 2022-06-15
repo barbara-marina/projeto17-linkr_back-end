@@ -46,6 +46,7 @@ export async function getPublications(req, res){
 
 export async function updatePublication(req, res){
     const {id} = req.params;
+    const {description} = req.body;
 
     try {
         
