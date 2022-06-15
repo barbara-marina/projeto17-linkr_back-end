@@ -10,7 +10,7 @@ export async function getHashtags(req, res){
         res.send(hashtags.rows);
         
     } catch (error) {
-            res.status(404).send('falha ao cadastrar usuário');
+            res.status(404).send('falha');
         
     }
 
@@ -31,7 +31,7 @@ export async function getHashtag(req, res){
 
         
     } catch (error) {
-            res.status(404).send('falha ao cadastrar usuário');
+            res.status(404).send('falha');
         
     }
 
