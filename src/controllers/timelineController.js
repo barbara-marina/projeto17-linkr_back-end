@@ -46,10 +46,52 @@ export async function getPublications(req, res){
 
 export async function updatePublication(req, res){
     const {id} = req.params;
+    const user = res.locals.user;
     const {description} = req.body;
 
     try {
+        const postFind = await db.query(`
+            SELECT * FROM "posts" WHERE id = $1
+        `, [id]);
+        const [post] = postFind.rows;
+
+        const verifyPost = !post || post.deleted || postFind.rowCount !== 1 || post.userId !== user.id;
+        if(verifyPost) return res.sendStatus(401);
         
+        const hashtagsAnterior = timelineRepository.getHashtagsInDescription(post.description);
+        const hashtagsAtual = timelineRepository.getHashtagsInDescription(description);
+
+        if(hashtagsAnterior.length > 0){
+            for(const hashtag of hashtagsAnterior){
+                await db.query(`
+                    DELETE FROM "hashtags" WHERE "name" = $1 AND "postId" = $2
+                `, [hashtag, post.id]);
+            }
+        }
+        if(description.length > 0 && hashtagsAtual.length > 0){
+            await db.query(`
+                UPDATE "posts" SET "description" = $1 WHERE "id" = $2
+            `, [description, id]);
+            
+            for(const hashtag of hashtagsAtual){
+                await db.query(`
+                    INSERT INTO "hashtags" ("postId", "name", "createdAt")
+                    VALUES ($1, $2, NOW())
+                `, [id, hashtag]);
+            }
+            return res.sendStatus(200);
+        }
+        if(description.length > 0 && hashtagsAtual.length === 0){
+            await db.query(`
+                UPDATE "posts" SET "description" = $1 WHERE "id" = $2
+            `, [description, id]);
+            return res.sendStatus(200);
+        }
+
+        await db.query(`
+            UPDATE "posts" SET "description" = $1 WHERE "id" = $2
+        `, [null, id]);
+        res.sendStatus(200);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
