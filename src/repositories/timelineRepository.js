@@ -42,12 +42,26 @@ async function getPostByUrl(url, userId){
     `, [url, userId]);
 }
 
+async function getPostById(id){
+    return db.query(`
+        SELECT * FROM "posts" WHERE "id" = $1
+    `, [id]);
+}
+
+async function updateDeletePost(id, boolean){
+    return db.query(`
+        UPDATE "posts" SET "deleted" = $1 WHERE "id" = $2
+    `, [id, boolean]);
+}
+
 const timelineRepository = {
     getHashtagsInDescription,
     insertPostUserDescription,
     insertHashtag,
     getPosts, 
-    getPostByUrl
+    getPostByUrl, 
+    getPostById,
+    updateDeletePost
 };
 
 export default timelineRepository;

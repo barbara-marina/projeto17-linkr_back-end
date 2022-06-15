@@ -1,3 +1,4 @@
+import db from "../../config/db.js";
 import timelineRepository from "../repositories/timelineRepository.js";
 
 export async function createPublication(req, res){
@@ -44,9 +45,31 @@ export async function getPublications(req, res){
 }
 
 export async function updatePublication(req, res){
-    console.log('teste');
+    const {id} = req.params;
+
+    try {
+        
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
 }
 
 export async function deletePublication(req, res){
-    console.log('teste');
+    const {id} = req.params;
+    const user = res.locals.user;
+
+    try {
+        const post = await timelineRepository.getPostById(id);
+        const [postId] = post.rows;
+
+        const verifyPost = postId.deleted || !postId || post.rowCount !== 1 || postId.userId !== user.id;
+        if(verifyPost) return res.sendStatus(401);
+
+        await timelineRepository.updateDeletePost(id, true);
+        res.sendStatus(204);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
 }
