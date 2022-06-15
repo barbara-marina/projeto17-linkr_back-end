@@ -1,9 +1,8 @@
-import db from "../../config/db.js";
 import timelineRepository from "../repositories/timelineRepository.js";
 
 export async function createPublication(req, res){
     const {url, description} = req.body;
-    const hashtags = timelineRepository.getHashtagsInDescription(description);
+    const hashtags = timelineRepository.getHashtagsInDescription(description); 
     const userId = res.locals.user.id;
     
     try {
@@ -12,12 +11,12 @@ export async function createPublication(req, res){
             const lastPost = await timelineRepository.getPostByUrl(url, userId);
             
             const [post] = lastPost.rows;
-            const verifyPost = !post.deleted || !post || lastPost.rowCount !== 1;
+            const verifyPost = post.deleted || !post || lastPost.rowCount !== 1;
             if(verifyPost) return res.sendStatus(401);
             
             const postId = post.id;
             for(const hashtag of hashtags){
-                timelineRepository.insertHashtag(postId, hashtag);
+                await timelineRepository.insertHashtag(postId, hashtag);
             }
             return res.sendStatus(201);
         }
@@ -50,47 +49,34 @@ export async function updatePublication(req, res){
     const {description} = req.body;
 
     try {
-        const postFind = await db.query(`
-            SELECT * FROM "posts" WHERE id = $1
-        `, [id]);
+        const postFind = await timelineRepository.getPostById(parseInt(id));
         const [post] = postFind.rows;
 
         const verifyPost = !post || post.deleted || postFind.rowCount !== 1 || post.userId !== user.id || post.id !== Number(id);
         if(verifyPost) return res.sendStatus(401);
         
-        const hashtagsAnterior = timelineRepository.getHashtagsInDescription(post.description);
-        const hashtagsAtual = timelineRepository.getHashtagsInDescription(description);
+        const hashtagsAnterior = timelineRepository.getHashtagsInDescription(post.description); //[#react, #node]
+        const hashtagsAtual = timelineRepository.getHashtagsInDescription(description); //[#react]
 
         if(hashtagsAnterior.length > 0){
             for(const hashtag of hashtagsAnterior){
-                await db.query(`
-                    DELETE FROM "hashtags" WHERE "name" = $1 AND "postId" = $2
-                `, [hashtag, id]);
+                await timelineRepository.deleteHashtagName(parent(id), hashtag);
             }
         }
         if(description.length > 0 && hashtagsAtual.length > 0){
-            await db.query(`
-                UPDATE "posts" SET "description" = $1 WHERE "id" = $2
-            `, [description, id]);
+            await timelineRepository.updatePostDescription(parseInt(id), description);
             
             for(const hashtag of hashtagsAtual){
-                await db.query(`
-                    INSERT INTO "hashtags" ("postId", "name", "createdAt")
-                    VALUES ($1, $2, NOW())
-                `, [id, hashtag]);
+                await timelineRepository.insertHashtag(parseInt(id), hashtag);
             }
             return res.sendStatus(200);
         }
         if(description.length > 0 && hashtagsAtual.length === 0){
-            await db.query(`
-                UPDATE "posts" SET "description" = $1 WHERE "id" = $2
-            `, [description, id]);
+            await timelineRepository.updatePostDescription(parseInt(id), description);
             return res.sendStatus(200);
         }
 
-        await db.query(`
-            UPDATE "posts" SET "description" = $1 WHERE "id" = $2
-        `, [null, id]);
+        await timelineRepository.updatePostDescription(parseInt(id), null);
         res.sendStatus(200);
     } catch (error) {
         console.log(error);
@@ -103,13 +89,13 @@ export async function deletePublication(req, res){
     const user = res.locals.user;
 
     try {
-        const post = await timelineRepository.getPostById(id);
+        const post = await timelineRepository.getPostById(parseInt(id));
         const [postId] = post.rows;
 
-        const verifyPost = postId.deleted || !postId || post.rowCount !== 1 || postId.userId !== user.id;
+        const verifyPost = postId.deleted || !postId || post.rowCount !== 1 || postId.userId !== Number(user.id);
         if(verifyPost) return res.sendStatus(401);
 
-        await timelineRepository.updateDeletePost(id, true);
+        await timelineRepository.updateDeletePost(parseInt(id), true);
         res.sendStatus(204);
     } catch (error) {
         console.log(error);

@@ -25,11 +25,12 @@ async function insertHashtag(postId, hashtag){
 async function getPosts(boolean){
     return db.query(`
         SELECT p.*, u.id, u.username, u.picture
-        SUM(l."postId") AS "likes"
+        COUNT(l."postId") AS "likes"
         FROM "posts" p
         JOIN "likes" l ON l."postId" = p."id"
         JOIN "users" u ON p."userId" = u."id"
         WHERE p."deleted" = $1
+        GROUP BY p."id", u."id"
         ORDER BY p."createdAt" DESC LIMIT 20
     `, [boolean]);
 }
@@ -54,6 +55,18 @@ async function updateDeletePost(id, boolean){
     `, [id, boolean]);
 }
 
+async function deleteHashtagName(postId, hashtag){
+    return db.query(`
+        DELETE FROM "hashtags" WHERE "name" = $1 AND "postId" = $2
+    `, [hashtag, postId]);
+}
+
+async function updatePostDescription(id, description){
+    return db.query(`
+        UPDATE "posts" SET "description" = $1 WHERE "id" = $2
+    `, [description, id]);
+}
+
 const timelineRepository = {
     getHashtagsInDescription,
     insertPostUserDescription,
@@ -61,7 +74,9 @@ const timelineRepository = {
     getPosts, 
     getPostByUrl, 
     getPostById,
-    updateDeletePost
+    updateDeletePost,
+    deleteHashtagName,
+    updatePostDescription
 };
 
 export default timelineRepository;
