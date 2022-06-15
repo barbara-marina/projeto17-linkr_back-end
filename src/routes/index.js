@@ -1,5 +1,4 @@
 import { Router } from "express";
-import autheticationRouter from "./authenticationRouter.js";
 
 import timelineRouter from "./timelineRouter.js";
 import hashtagRouter from "./hashtagRouter.js";
