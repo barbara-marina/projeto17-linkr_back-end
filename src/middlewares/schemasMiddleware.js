@@ -4,6 +4,6 @@ export function schemasValidations(schema) {
         const {error} = validation;
 
         if (error) return res.status(422).send(error.details.map(detail => detail.message));
-        next();
+        else next();
     }
 }
