@@ -1,7 +1,7 @@
 import { Router } from "express";
 
-import { createLike } from "../controllers/likeController";
-import { validationToken } from "../middlewares/tokenMiddleware";
+import { createLike } from "../controllers/likeController.js";
+import { validationToken } from "../middlewares/tokenMiddleware.js";
 
 const likeRouter = Router();
 
