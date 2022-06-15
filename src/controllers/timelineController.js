@@ -8,11 +8,13 @@ export async function createPublication(req, res){
     try {
         if(description.length > 0 && hashtags.length > 0){
             await timelineRepository.insertPostUserDescription(userId, url, description);
-
             const lastPost = await timelineRepository.getPostByUrl(url, userId);
-            const [post] = lastPost;
+            
+            const [post] = lastPost.rows;
+            const verifyPost = !post.deleted || !post || lastPost.rowCount !== 1;
+            if(verifyPost) return res.sendStatus(401);
+            
             const postId = post.id;
-
             for(const hashtag of hashtags){
                 timelineRepository.insertHashtag(postId, hashtag);
             }

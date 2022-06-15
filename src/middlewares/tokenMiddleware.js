@@ -9,17 +9,17 @@ export async function validationToken(req, res, next){
         const session = await db.query(`
             SELECT * FROM "sessions" WHERE token = $1
         `, [token]);
-        const [userSession] = session;
+        const [userSession] = session.rows;
         
-        const verifySession = !userSession || session.rowCount > 0 || !userSession.valid;
+        const verifySession = !userSession || session.rowCount !== 1 || !userSession.valid;
         if(verifySession) return res.sendStatus(401);
 
         const user = await db.query(`
             SELECT * FROM "users" WHERE id = $1
-        `, [session.userId]);
-        const [userId] = user;
+        `, [userSession.userId]);
+        const [userId] = user.rows;
 
-        const verifyUser = !userId || user.rowCount > 0;
+        const verifyUser = !userId || user.rowCount !== 1;
         if(verifyUser) return res.sendStatus(401);
 
         res.locals.user = userId;
