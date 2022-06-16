@@ -7,6 +7,8 @@ const autheticationRouter = Router();
 
 autheticationRouter.post("/sign-up", schemasValidations(vDatasToRegister),  createUser);
 
+console.log("entrou nos routers")
+
 
 
 export default autheticationRouter;

@@ -5,6 +5,9 @@ export async function createUser(req, res){
 
     const {email, username, password, picture_url} = req.body;
     const passCrypt = bcrypt.hashSync(password, 10);
+
+    console.log("entrou nos routers")
+
     
     try {
         const user = await db.query(`SELECT * FROM users WHERE email = $1`, [`${email.toLowerCase()}`]);
