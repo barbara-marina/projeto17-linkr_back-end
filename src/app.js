@@ -5,6 +5,7 @@ import chalk from "chalk";
 import dotenv from "dotenv";
 
 import router from "./routes/index.js";
+
 dotenv.config();
 
 const app = express();
