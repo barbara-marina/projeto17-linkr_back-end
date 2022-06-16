@@ -36,7 +36,12 @@ export async function createPublication(req, res){
 export async function getPublications(req, res){
     try {
         const result = await timelineRepository.getPosts(false);
-        res.status(200).send(result.rows);
+        const likeUser = await timelineRepository.likesUsersPost();
+
+        res.status(200).send({
+            posts: result.rows,
+            usersLikes: likeUser.rows
+        });
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
@@ -55,8 +60,8 @@ export async function updatePublication(req, res){
         const verifyPost = !post || post.deleted || postFind.rowCount !== 1 || post.userId !== user.id || post.id !== Number(id);
         if(verifyPost) return res.sendStatus(401);
         
-        const hashtagsAnterior = timelineRepository.getHashtagsInDescription(post.description); //[#react, #node]
-        const hashtagsAtual = timelineRepository.getHashtagsInDescription(description); //[#react]
+        const hashtagsAnterior = timelineRepository.getHashtagsInDescription(post.description);
+        const hashtagsAtual = timelineRepository.getHashtagsInDescription(description);
 
         if(hashtagsAnterior.length > 0){
             for(const hashtag of hashtagsAnterior){
