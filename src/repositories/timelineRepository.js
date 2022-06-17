@@ -27,7 +27,7 @@ async function getPosts(boolean){
         SELECT p.*, u.id AS "userId", u.username, u.picture,
         COUNT(l."postId") AS "likes"
         FROM "posts" p
-        JOIN "likes" l ON l."postId" = p."id"
+        LEFT JOIN "likes" l ON l."postId" = p."id"
         JOIN "users" u ON p."userId" = u."id"
         WHERE p."deleted" = $1
         GROUP BY p."id", u."id"
