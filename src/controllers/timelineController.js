@@ -1,13 +1,20 @@
+import urlMetadata from "url-metadata";
+
 import timelineRepository from "../repositories/timelineRepository.js";
 
 export async function createPublication(req, res){
     const {url, description} = req.body;
     const hashtags = timelineRepository.getHashtagsInDescription(description); 
     const userId = res.locals.user.id;
+    const metaDataPost = await urlMetadata(url);
     
+    const {url: urlData, description: descriptionData, title, image} = metadados;
+    const verifyMetadados = !metaDataPost || !image || !title || !descriptionData || !urlData
+    if(verifyMetadados) return res.status(400).send('Esta url não fornece metadados');
+
     try {
         if(description.length > 0 && hashtags.length > 0){
-            await timelineRepository.insertPostUserDescription(userId, url, description);
+            await timelineRepository.insertPostUserDescription(userId, url, description, metaDataPost);
             const lastPost = await timelineRepository.getPostByUrl(url, userId);
             
             const [post] = lastPost.rows;
@@ -21,11 +28,11 @@ export async function createPublication(req, res){
             return res.sendStatus(201);
         }
         if(description.length > 0 && hashtags.length === 0){
-            await timelineRepository.insertPostUserDescription(userId, url, description);
+            await timelineRepository.insertPostUserDescription(userId, url, description, metaDataPost);
             return res.sendStatus(201);
         }
 
-        await timelineRepository.insertPostUserDescription(userId, url, null);
+        await timelineRepository.insertPostUserDescription(userId, url, null, metaDataPost);
         res.sendStatus(201);
     } catch (error) {
         console.log(error);
