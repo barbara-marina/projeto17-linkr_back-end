@@ -4,10 +4,14 @@ export async function getHashtags(req, res){
 
     try {
         const hashtags = await db.query(`
-            SELECT * FROM hashtags LIMIT 10
-        `)
+            SELECT * FROM hashtags
+        `);
 
-        res.send(hashtags.rows);
+        const hashtagName = hashtags.rows;
+        const newhash = hashtagName.map((h) => h.name);
+        //const result = newhash.filter((h, i) => newhash.indexOf(h) === i);
+
+        res.send(newhash);
 
     } catch (error) {
         res.status(500).send(error);
@@ -17,13 +21,14 @@ export async function getHashtags(req, res){
 }
 
 export async function getHashtag(req, res){
-    const { id } = req.params;
-    
+    const name = req.params.hashtag;
+
+
     try {
 
         const hashtag = await db.query(`
-            SELECT id FROM hashtags WHERE name=$1;
-        `, [id]);
+            SELECT * FROM hashtags WHERE name=$1;
+        `, [name]);
         
         if (hashtag.rowCount === 0) {
             return res.sendStatus(404);
@@ -37,4 +42,20 @@ export async function getHashtag(req, res){
         
     }
 
+}
+
+export async function getHashtagPosts(req, res){
+    const name = req.params.hashtag;
+
+    try {
+
+        const posts = await db.query(`
+            SELECT * FROM posts WHERE description LIKE '%${name}%';
+        `);
+
+        res.send(posts.rows)
+        
+    } catch (error) {
+        res.status(500).send(error);
+    }
 }
