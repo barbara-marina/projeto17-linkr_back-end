@@ -38,7 +38,8 @@ export async function login(req, res){
         if(!matchPass) return res.status(404).send('Senha inválida');
 
         const session = await infoUsers.createSession(user.id, token);
-        res.status(200).send(token);
+
+        res.status(200).json({"token":token, "image":user.picture, "username":user.username});
         
     } catch (error) {
         console.log('Erro ao logar: ', error);
@@ -49,24 +50,21 @@ export async function login(req, res){
 }
 
 export async function logout(req, res){
+    console.log('en')
+    const { token } = req.body;
+    console.log('here:',token)
     
-    const { authorization} = req.headers;
-    const token = authorization.replace('Bearer', '').trim();
-
     try {
-        const updateSession = await db.query(`
-                    UPDATE sessions
-                    SET valid = false
-                    WHERE token = $1 AND valid = $2
-                    `,[token, true]);
+        const tryOut = await infoUsers.logout(token);
 
-        console.log(updateSession)
-        
-        updateSession.rowCount === 1 
+        console.log(tryOut)
+
+        tryOut.rowCount === 1 
         ? res.sendStatus(200)
         : res.status(404).send('não foi possivel fazer o logout');
 
     } catch (error) {
-        res.status(403).send('Erro no servidor, procure o SAC');
+        res.status(404);
     } 
-}//não concluida
+
+}    
