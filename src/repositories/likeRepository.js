@@ -2,7 +2,7 @@ import db from "../../config/db.js";
 
 async function getLikeUserPost(userId, postId){
     return db.query(`
-        SELECT * FROM "likes" WHERE userId = $1 AND postId = $2
+        SELECT * FROM "likes" WHERE "userId" = $1 AND "postId" = $2
     `, [userId, postId]);
 }
 
