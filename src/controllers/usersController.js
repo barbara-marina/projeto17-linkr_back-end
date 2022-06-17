@@ -1,12 +1,14 @@
-import db from "../../config/db.js";
 import usersRepository from "../repositories/usersRepository.js";
 
 async function getPostsByUserId(req, res) {
     const { id } = req.params;
 
     try {
-        const data = await usersRepository.getPostsByUserId(parseInt(id));
-        res.send(data.rows[0]);
+        const userData = await usersRepository.getPostsByUserId(parseInt(id));
+        
+        if (userData.rowCount === 0) return res.status(404).send("Usuário não existe."); 
+        
+        res.send(userData.rows[0]);
     } catch(error) {
         console.log(error);
         res.sendStatus(500);

@@ -18,16 +18,16 @@ function getPostsByUserId(id) {
 }
 
 function listUsers(username) {
-    return db.query(`
-    SELECT u.id, u.username, u.picture
-FROM users u
-WHERE u.username ILIKE $1;
+        return db.query(`
+        SELECT u.id, u.username, u.picture
+        FROM users u
+        WHERE u.username ILIKE $1;
     `, [(username + "%")]);
 }
 
 const usersRepository = {
     getPostsByUserId,
-    listUsers
+    listUsers,
 };
 
 export default usersRepository;
