@@ -25,7 +25,7 @@ export async function createUser(email, passCrypt, username, picture_url){
 export async function login(email){
     try {
         const user = await db.query(`
-            SELECT  u.id, u.email, u.password
+            SELECT  u.id, u.email, u.password, u.picture, u.username
             FROM users u 
             WHERE email = $1
                     
@@ -52,18 +52,15 @@ export async function createSession(userId, token){
     }
 }
 
-export async function checkToken(token){
+export async function logout(token){
 
-    const isThere =  await db.query(`
-                                    SELECT s.valid,
-                                    FROM sessions s
-                                    JOIN users u 
-                                    WHERE token = $1
-                                    `,[token]);
+    return db.query(`
+            UPDATE sessions
+            SET valid = false
+            WHERE token = $1 AND valid = $2
+            `,[token, true]);
 
-    return isThere.rows[0]
-
-}//não terminado
+}
 
 export async function getUserByToken(token){
 
@@ -77,12 +74,12 @@ export async function getUserByToken(token){
 
 }//não terminado
 
-
 const infoUsers = {
     isThereEmail,
     createUser,
     login,
     createSession,
+    logout
  
 }
 
