@@ -8,7 +8,7 @@ export async function createPublication(req, res){
     const userId = res.locals.user.id;
     const metaDataPost = await urlMetadata(url);
     
-    const {url: urlData, description: descriptionData, title, image} = metadados;
+    const {url: urlData, description: descriptionData, title, image} = metaDataPost;
     const verifyMetadados = !metaDataPost || !image || !title || !descriptionData || !urlData
     if(verifyMetadados) return res.status(400).send('Esta url não fornece metadados');
 
