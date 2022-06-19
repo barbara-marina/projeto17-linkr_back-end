@@ -39,7 +39,7 @@ export async function login(req, res){
 
         const session = await infoUsers.createSession(user.id, token);
 
-        res.status(200).json({"token":token, "image":user.picture, "username":user.username});
+        res.status(200).json({"token":token, "id": user.id, "image":user.picture, "username":user.username});
         
     } catch (error) {
         console.log('Erro ao logar: ', error);
@@ -50,14 +50,11 @@ export async function login(req, res){
 }
 
 export async function logout(req, res){
-    console.log('en')
+
     const { token } = req.body;
-    console.log('here:',token)
-    
+
     try {
         const tryOut = await infoUsers.logout(token);
-
-        console.log(tryOut)
 
         tryOut.rowCount === 1 
         ? res.sendStatus(200)
