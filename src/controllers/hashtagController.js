@@ -12,11 +12,7 @@ export async function getHashtags(req, res){
             LIMIT 10; 
         `);
 
-        const hashtagName = hashtags.rows;
-        const newhash = hashtagName.map((h) => h.name);
-        //const result = newhash.filter((h, i) => newhash.indexOf(h) === i);
-
-        res.send(newhash);
+        res.send(hashtags.rows);
 
     } catch (error) {
         res.status(500).send(error);
