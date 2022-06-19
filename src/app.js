@@ -5,6 +5,7 @@ import chalk from "chalk";
 import dotenv from "dotenv";
 
 import router from "./routes/index.js";
+
 dotenv.config();
 
 const app = express();
@@ -13,8 +14,7 @@ app.use(json());
 app.use(morgan('dev'));
 app.use(router);
 
-const port = process.env.PORT
-
+const port = process.env.PORT || 4000;
 app.listen(port, () => {
     console.log(chalk.bold.cyanBright(`Server is up and runnig on port ${port}`));
 });

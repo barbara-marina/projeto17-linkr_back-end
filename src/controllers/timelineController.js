@@ -1,13 +1,20 @@
+import urlMetadata from "url-metadata";
+
 import timelineRepository from "../repositories/timelineRepository.js";
 
 export async function createPublication(req, res){
     const {url, description} = req.body;
     const hashtags = timelineRepository.getHashtagsInDescription(description); 
     const userId = res.locals.user.id;
+    const metaDataPost = await urlMetadata(url);
     
+    const {url: urlData, description: descriptionData, title, image} = metaDataPost;
+    const verifyMetadados = !metaDataPost || !image || !title || !descriptionData || !urlData
+    if(verifyMetadados) return res.status(400).send('Esta url não fornece metadados');
+
     try {
         if(description.length > 0 && hashtags.length > 0){
-            await timelineRepository.insertPostUserDescription(userId, url, description);
+            await timelineRepository.insertPostUserDescription(userId, url, description, metaDataPost);
             const lastPost = await timelineRepository.getPostByUrl(url, userId);
             
             const [post] = lastPost.rows;
@@ -21,11 +28,11 @@ export async function createPublication(req, res){
             return res.sendStatus(201);
         }
         if(description.length > 0 && hashtags.length === 0){
-            await timelineRepository.insertPostUserDescription(userId, url, description);
+            await timelineRepository.insertPostUserDescription(userId, url, description, metaDataPost);
             return res.sendStatus(201);
         }
 
-        await timelineRepository.insertPostUserDescription(userId, url, null);
+        await timelineRepository.insertPostUserDescription(userId, url, null, metaDataPost);
         res.sendStatus(201);
     } catch (error) {
         console.log(error);
@@ -36,7 +43,12 @@ export async function createPublication(req, res){
 export async function getPublications(req, res){
     try {
         const result = await timelineRepository.getPosts(false);
-        res.status(200).send(result.rows);
+        const likeUser = await timelineRepository.likesUsersPost();
+
+        res.status(200).send({
+            posts: result.rows,
+            usersLikes: likeUser.rows
+        });
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
@@ -55,8 +67,8 @@ export async function updatePublication(req, res){
         const verifyPost = !post || post.deleted || postFind.rowCount !== 1 || post.userId !== user.id || post.id !== Number(id);
         if(verifyPost) return res.sendStatus(401);
         
-        const hashtagsAnterior = timelineRepository.getHashtagsInDescription(post.description); //[#react, #node]
-        const hashtagsAtual = timelineRepository.getHashtagsInDescription(description); //[#react]
+        const hashtagsAnterior = timelineRepository.getHashtagsInDescription(post.description);
+        const hashtagsAtual = timelineRepository.getHashtagsInDescription(description);
 
         if(hashtagsAnterior.length > 0){
             for(const hashtag of hashtagsAnterior){
@@ -97,6 +109,23 @@ export async function deletePublication(req, res){
 
         await timelineRepository.updateDeletePost(parseInt(id), true);
         res.sendStatus(204);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+}
+
+export async function getPostRedirect(req, res){
+    const {id} = req.params;
+
+    try {
+        const post = await timelineRepository.getPostById(parseInt(id));
+        const [postId] = post.rows;
+
+        const verifyPostRedirect = !postId || post.rowCount !== 1 || postId.deleted || !postId.url;
+        if(verifyPostRedirect) return res.sendStatus(401);
+        
+        res.redirect(postId.url);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);

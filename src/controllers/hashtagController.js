@@ -10,6 +10,7 @@ export async function getHashtags(req, res){
             ORDER BY "amount"
             DESC
             LIMIT 10; 
+
         `);
 
         res.send(hashtags.rows);

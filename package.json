@@ -29,5 +29,13 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.16"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/barbara-marina/projeto17-linkr_back-end.git"
+  },
+  "bugs": {
+    "url": "https://github.com/barbara-marina/projeto17-linkr_back-end/issues"
+  },
+  "homepage": "https://github.com/barbara-marina/projeto17-linkr_back-end#readme"
 }
