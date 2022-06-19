@@ -29,12 +29,21 @@ export async function getHashtagPosts(req, res){
     try {
 
         const posts = await db.query(`
-            SELECT * FROM posts WHERE description LIKE $1;
+
+            SELECT p.*, u.id AS "userId", u.username, u.picture,
+            COUNT(l."postId") AS "likes"
+            FROM "posts" p
+            LEFT JOIN "likes" l ON l."postId" = p."id"
+            JOIN "users" u ON p."userId" = u."id"
+            WHERE description LIKE $1
+            GROUP BY p."id", u."id"
+            ORDER BY p."createdAt" DESC LIMIT 20
+
         `, [('%#' + hashtag + '%')]);
 
         
         if (posts.rowCount === 0) {
-            return res.sendStatus(406);
+            return res.sendStatus(404);
         }
 
         res.send(posts.rows);
