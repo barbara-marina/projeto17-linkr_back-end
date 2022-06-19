@@ -114,3 +114,20 @@ export async function deletePublication(req, res){
         res.sendStatus(500);
     }
 }
+
+export async function getPostRedirect(req, res){
+    const {id} = req.params;
+
+    try {
+        const post = await timelineRepository.getPostById(parseInt(id));
+        const [postId] = post.rows;
+
+        const verifyPostRedirect = !postId || post.rowCount !== 1 || postId.deleted || !postId.url;
+        if(verifyPostRedirect) return res.sendStatus(401);
+        
+        res.redirect(postId.url);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+}
