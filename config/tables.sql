@@ -18,8 +18,12 @@ CREATE TABLE "sessions"(
 CREATE TABLE "posts"(
     "id" SERIAL PRIMARY KEY NOT NULL,
     "userId" INTEGER REFERENCES "users"("id") NOT NULL,
-    "description" TEXT,
     "url" TEXT NOT NULL,
+    "description" TEXT,
+    "urlMetadata" TEXT NOT NULL,
+    "descriptionMetadata" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "image" TEXT NOT NULL,
     "deleted" BOOLEAN NOT NULL DEFAULT FALSE,
     "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
 );

@@ -7,12 +7,18 @@ function getHashtagsInDescription(str){
     return arrHashtags;
 } 
 
-async function insertPostUserDescription(userId, url, description){
+async function insertPostUserDescription(userId, url, description, metadados){
+    const {
+        url: urlMetadata, description: descriptionMetadata, title, image
+    } = metadados;
+
     return db.query(`
         INSERT INTO "posts" (
-            "userId", "url", "description", "deleted", "createdAt"
-        ) VALUES ($1, $2, $3, $4, NOW())
-    `, [userId, url, description, false]);
+            "userId", "url", "description", "urlMetadata",
+            "descriptionMetadata", "title", "image",
+            "deleted", "createdAt"
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
+    `, [userId, url, description, urlMetadata, descriptionMetadata, title, image, false]);
 }
 
 async function insertHashtag(postId, hashtag){
@@ -24,10 +30,11 @@ async function insertHashtag(postId, hashtag){
 
 async function getPosts(boolean){
     return db.query(`
+
         SELECT p.*, u.id AS "userId", u.username, u.picture,
         COUNT(l."postId") AS "likes"
         FROM "posts" p
-        JOIN "likes" l ON l."postId" = p."id"
+        LEFT JOIN "likes" l ON l."postId" = p."id"
         JOIN "users" u ON p."userId" = u."id"
         WHERE p."deleted" = $1
         GROUP BY p."id", u."id"

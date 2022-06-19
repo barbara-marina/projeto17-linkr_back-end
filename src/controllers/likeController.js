@@ -3,7 +3,7 @@ import timelineRepository from "../repositories/timelineRepository.js";
 
 export async function createLike(req, res){
     const {id} = req.params;
-    const user = req.locals.user;
+    const user = res.locals.user;
     
     try {
         const post = await timelineRepository.getPostById(parseInt(id));
@@ -28,7 +28,7 @@ export async function createLike(req, res){
 
 export async function createDislike(req, res){
     const {id} = req.params;
-    const user = req.locals.user;
+    const user = res.locals.user;
     
     try {
         const post = await timelineRepository.getPostById(parseInt(id));
