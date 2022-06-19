@@ -21,42 +21,27 @@ export async function getHashtags(req, res){
 
 }
 
-export async function getHashtag(req, res){
-    const name = req.params.hashtag;
-
-
-    try {
-
-        const hashtag = await db.query(`
-            SELECT * FROM hashtags WHERE name=$1;
-        `, [name]);
-        
-        if (hashtag.rowCount === 0) {
-            return res.sendStatus(404);
-        }
-
-        res.send(hashtag.rows);
-        
-    } catch (error) {
-        
-        res.status(500).send(error);
-        
-    }
-
-}
-
 export async function getHashtagPosts(req, res){
-    const name = req.params.hashtag;
+    const { hashtag } = req.params;
+
 
     try {
 
         const posts = await db.query(`
-            SELECT * FROM posts WHERE description LIKE '%${name}%';
-        `);
+            SELECT * FROM posts WHERE description LIKE $1;
+        `, [('%#' + hashtag + '%')]);
 
-        res.send(posts.rows)
+        
+        if (posts.rowCount === 0) {
+            return res.sendStatus(406);
+        }
+
+        res.send(posts.rows);
         
     } catch (error) {
+        
         res.status(500).send(error);
+        
     }
+
 }
