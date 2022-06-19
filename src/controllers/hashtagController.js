@@ -1,7 +1,7 @@
 import db from "../../config/db.js";
 
 export async function getHashtags(req, res){
-    
+
     try {
         const hashtags = await db.query(`
             SELECT hashtags.name, COUNT(hashtags.name) AS "amount"
@@ -10,33 +10,38 @@ export async function getHashtags(req, res){
             ORDER BY "amount"
             DESC
             LIMIT 10; 
-        `)
+
+        `);
 
         res.send(hashtags.rows);
-        
+
     } catch (error) {
-            res.status(404).send('falha ao cadastrar usuário');
+        res.status(500).send(error);
         
     }
 
 }
 
-export async function getHashtag(req, res){
-    const { id } = req.params;
-    
+export async function getHashtagPosts(req, res){
+    const { hashtag } = req.params;
+
+
     try {
 
-        const hashtag = await db.query(`
-            SELECT * FROM users WHERE id=$1;
-        `, [id]);
-        
-        if (hashtag.rowCount === 0) {
-            return res.sendStatus(404)
-        }
+        const posts = await db.query(`
+            SELECT * FROM posts WHERE description LIKE $1;
+        `, [('%#' + hashtag + '%')]);
 
         
+        if (posts.rowCount === 0) {
+            return res.sendStatus(406);
+        }
+
+        res.send(posts.rows);
+        
     } catch (error) {
-            res.status(404).send('falha ao cadastrar usuário');
+        
+        res.status(500).send(error);
         
     }
 
