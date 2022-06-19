@@ -6,7 +6,11 @@ async function getPostsByUserId(req, res) {
     try {
         const userData = await usersRepository.getPostsByUserId(parseInt(id));
         
-        if (userData.rowCount === 0) return res.status(404).send("Usuário não existe."); 
+        if (userData.rowCount === 0) return res.status(404).send("Usuário não existe.");
+
+        if (userData.rows[0].userPosts[0]===null) {
+            userData.rows[0].userPosts.shift();
+        }
         
         res.send(userData.rows[0]);
     } catch(error) {
