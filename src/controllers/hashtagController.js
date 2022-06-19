@@ -4,7 +4,12 @@ export async function getHashtags(req, res){
     
     try {
         const hashtags = await db.query(`
-            SELECT * FROM hashtags
+            SELECT hashtags.name, COUNT(hashtags.name) AS "amount"
+            FROM hashtags
+            GROUP BY hashtags.name
+            ORDER BY "amount"
+            DESC
+            LIMIT 10; 
         `)
 
         res.send(hashtags.rows);
