@@ -30,7 +30,6 @@ async function insertHashtag(postId, hashtag){
 
 async function getPosts(boolean){
     return db.query(`
-
         SELECT p.*, u.id AS "userId", u.username, u.picture,
         COUNT(l."postId") AS "likes"
         FROM "posts" p
@@ -56,10 +55,10 @@ async function getPostById(id){
     `, [id]);
 }
 
-async function updateDeletePost(id, boolean){
+async function updateDeletePost(id, userId){
     return db.query(`
-        UPDATE "posts" SET "deleted" = $1 WHERE "id" = $2
-    `, [id, boolean]);
+        UPDATE "posts" SET "deleted" = $1 WHERE id = $2 AND "userId" = $3
+    `, [true, id, userId]);
 }
 
 async function deleteHashtagName(postId, hashtag){

@@ -1,4 +1,5 @@
 import urlMetadata from "url-metadata";
+import db from "../../config/db.js";
 
 import timelineRepository from "../repositories/timelineRepository.js";
 
@@ -107,8 +108,8 @@ export async function deletePublication(req, res){
         const verifyPost = postId.deleted || !postId || post.rowCount !== 1 || postId.userId !== Number(user.id);
         if(verifyPost) return res.sendStatus(401);
 
-        await timelineRepository.updateDeletePost(parseInt(id), true);
-        res.sendStatus(204);
+        await timelineRepository.updateDeletePost(parseInt(id), Number(user.id));
+        res.sendStatus(200);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
