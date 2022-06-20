@@ -12,11 +12,12 @@ export async function getHashtags(req, res){
 }
 
 export async function getHashtagPosts(req, res){
-    const { hashtag } = req.params;
 
+    const { hashtag } = req.params;
+    
     try {
         const posts = await hashtagRepository.getHashtagPosts(hashtag);
-      
+        console.log(posts.rows);
         if (posts.rowCount === 0) {
             return res.sendStatus(404);
         }

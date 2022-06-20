@@ -19,10 +19,10 @@ function getHashtagPosts(hashtag){
         FROM "posts" p
         LEFT JOIN "likes" l ON l."postId" = p."id"
         JOIN "users" u ON p."userId" = u."id"
-        WHERE description LIKE $1
+        WHERE description ILIKE $1
         GROUP BY p."id", u."id"
         ORDER BY p."createdAt" DESC LIMIT 20
-    `, [('%#' + hashtag + '%')]);
+    `, [(`%#${hashtag}%`)]);
 }
 
 const hashtagRepository =  { getHashtags, getHashtagPosts }
