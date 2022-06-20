@@ -6,13 +6,15 @@ export async function checkLiked(req, res){
     const {postId, userId} = req.params;
     
     try {
+
         const liked = await likeRepository.getLikeUserPost(userId, postId);
 
-        if(liked.rowCount === 0) res.status(201).send(false);
+        if(liked.rowCount === 0) return res.status(201).send(false);
+
         else res.status(201).send(true);
         
     } catch (error) {
-        
+        res.sendStatus(500);
     }
     
 }
