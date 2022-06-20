@@ -1,25 +1,36 @@
 import likeRepository from "../repositories/likeRepository.js";
-import timelineRepository from "../repositories/timelineRepository.js";
+//import timelineRepository from "../repositories/timelineRepository.js";
+
+export async function checkLiked(req, res){
+
+    const {id:postId, userId} = req.params;
+
+    try {
+        const liked = await likeRepository.getLikeUserPost(userId, postId);
+        console.log(liked.rowCount);
+
+        if(liked.rowCount === 0) res.status(201).send(false);
+        else res.status(201).send(true);
+        
+        
+    } catch (error) {
+        
+    }
+    
+}
 
 export async function createLike(req, res){
-    const {id} = req.params;
-    const user = res.locals.user;
-    
+
+    const {postId, userId} = req.params;
+
     try {
-        const post = await timelineRepository.getPostById(parseInt(id));
-        
-        const [postId] = post.rows;
-        const verifyPost = !postId || postId.deleted || post.rowCount !== 1 || postId.id !== Number(id);
-        if(verifyPost) return res.sendStatus(401);
 
-        const like = await likeRepository.getLikeUserPost(user.id, parseInt(id));
-        
-        const [likeId] = like.rows;
-        const verifyLike = likeId && like.rowCount === 1;
-        if(verifyLike) return res.sendStatus(401);
+        const like = await likeRepository.getLikeUserPost(userId, postId);
+        if(like.rowCount !== 0) res.sendStatus(200);
 
-        await likeRepository.insertLikeUserPost(user.id, parseInt(id));
+        await likeRepository.insertLikeUserPost(userId, postId);
         res.sendStatus(200);
+
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
@@ -27,23 +38,14 @@ export async function createLike(req, res){
 }
 
 export async function createDislike(req, res){
-    const {id} = req.params;
-    const user = res.locals.user;
-    
-    try {
-        const post = await timelineRepository.getPostById(parseInt(id));
-        
-        const [postId] = post.rows;
-        const verifyPost = !postId || postId.deleted || post.rowCount !== 1 || postId.id !== Number(id);
-        if(verifyPost) return res.sendStatus(401);
 
-        const allowDislike = await likeRepository.getLikeUserPost(user.id, parseInt(id));    
-        
-        const [dislikeId] = allowDislike.rows;
-        const verifyDislike = !dislikeId || allowDislike.rowCount !== 1;
-        if(verifyDislike) return res.sendStatus(401);
-        
-        await likeRepository.deleteLikeUserPost(user.id, parseInt(id));
+    const {postId, userId} = req.params;
+   
+    try {
+        const like = await likeRepository.getLikeUserPost(userId, postId);
+        if(like.rowCount === 0) res.sendStatus(200);
+
+        await likeRepository.deleteLikeUserPost(userId, postId);
         res.sendStatus(200);
     } catch (error) {
         console.log(error);
