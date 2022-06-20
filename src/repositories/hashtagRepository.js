@@ -2,9 +2,11 @@ import db from "../../config/db.js";
 
 function getHashtags(){
     return db.query(`
-        SELECT hashtags.name, COUNT(hashtags.name) AS "amount"
-        FROM hashtags
-        GROUP BY hashtags.name
+        SELECT h.name, COUNT(h.name) AS "amount"
+        FROM hashtags h
+        JOIN "posts" p ON h."postId"=p.id
+        WHERE deleted=false
+        GROUP BY h.name
         ORDER BY "amount"
         DESC
         LIMIT 10; 
@@ -20,7 +22,6 @@ function getHashtagPosts(hashtag){
         LEFT JOIN "likes" l ON l."postId" = p."id"
         JOIN "users" u ON p."userId" = u."id"
         WHERE description ILIKE $1
-        AND deleted = FALSE
         GROUP BY p."id", u."id"
         ORDER BY p."createdAt" DESC LIMIT 20
     `, [(`%#${hashtag}%`)]);
