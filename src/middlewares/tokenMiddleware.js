@@ -3,6 +3,7 @@ import db from "../../config/db.js";
 export async function validationToken(req, res, next){
     const {authorization} = req.headers;
     const token = authorization?.replace('Bearer ', '').trim();
+
     if(!token) return res.sendStatus(401);
 
     try {
@@ -23,6 +24,7 @@ export async function validationToken(req, res, next){
         if(verifyUser) return res.sendStatus(401);
 
         res.locals.user = userId;
+        console.log('passou no token')
         next();
     } catch (error) {
         console.log(error);

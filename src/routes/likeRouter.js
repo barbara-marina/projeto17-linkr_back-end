@@ -5,7 +5,7 @@ import { validationToken } from "../middlewares/tokenMiddleware.js";
 
 const likeRouter = Router();
 
-likeRouter.get('/like/:id/:userId', validationToken, checkLiked);
+likeRouter.get('/like/:postId/:userId', validationToken, checkLiked);
 likeRouter.post('/like/:postId/:userId', createLike);
 likeRouter.delete('/dislike/:postId/:userId', createDislike);
 
