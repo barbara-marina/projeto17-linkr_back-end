@@ -41,3 +41,25 @@ CREATE TABLE "likes"(
     "postId" INTEGER REFERENCES "posts"("id") NOT NULL,
     "createdAt" TIMESTAMP DEFAULT NOW()
 );
+
+CREATE TABLE "comments"(
+    "id" SERIAL PRIMARY KEY NOT NULL,
+    "userId" INTEGER REFERENCES "users"("id") NOT NULL,
+    "postId" INTEGER REFERENCES "posts"("id") NOT NULL,
+    "comment" TEXT NOT NULL,
+    "createdAt" TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE "share"(
+    "id" SERIAL PRIMARY KEY NOT NULL,
+    "postId" INTEGER REFERENCES "posts"("id") NOT NULL,
+    "repostUserId" INTEGER REFERENCES "users"("id") NOT NULL,
+    "createdAt" TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE "followers"(
+    "id" SERIAL PRIMARY KEY NOT NULL,
+    "userId" INTEGER REFERENCES "users"("id") NOT NULL,
+    "following" INTEGER REFERENCES "users"("id") NOT NULL,
+    "createdAt" TIMESTAMP DEFAULT NOW()
+);
