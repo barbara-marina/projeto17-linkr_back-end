@@ -1,5 +1,4 @@
 import urlMetadata from "url-metadata";
-import db from "../../config/db.js";
 
 import timelineRepository from "../repositories/timelineRepository.js";
 
@@ -73,7 +72,7 @@ export async function updatePublication(req, res){
 
         if(hashtagsAnterior.length > 0){
             for(const hashtag of hashtagsAnterior){
-                await timelineRepository.deleteHashtagName(parent(id), hashtag);
+                await timelineRepository.deleteHashtagName(Number(id), hashtag);
             }
         }
         if(description.length > 0 && hashtagsAtual.length > 0){
