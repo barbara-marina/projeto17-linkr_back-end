@@ -5,6 +5,6 @@ import { validationToken } from "../middlewares/tokenMiddleware.js";
 
 const postRouter = Router()
 
-postRouter.put('/post/:id', validationToken, sharePost);
+postRouter.post('/post/:postId', validationToken, sharePost);
 
 export default postRouter;

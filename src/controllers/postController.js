@@ -1,12 +1,11 @@
 import postRepository from "../repositories/postRepository.js";
 
 export async function sharePost(req, res){
-    const { username } = req.body;
-    const { id } = req.params;
+    const { postId } = req.params;
     const user = res.locals.user;
 
     try {
-        await postRepository.sharePost(username, parseInt(id), Number(user.id));
+        await postRepository.sharePost(parseInt(postId), Number(user.id));
 
         res.sendStatus(200);
         

@@ -1,10 +1,10 @@
 import db from "../../config/db.js";
 
-async function sharePost(username, id, userId){
+async function sharePost(postId, userId){
     return db.query(`
-        UPDATE "posts" SET "shares"="shares"+1, "repostedBy"=$1 WHERE id=$2 AND "userId" = $3
-    `, [username, id, userId]);
-
+        INSERT INTO "shared" ("postId", "repostUserId")
+        VALUES ($1, $2)
+    `, [postId, userId]);
 }
 
 const postRepository = {
