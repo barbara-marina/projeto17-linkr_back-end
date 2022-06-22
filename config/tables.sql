@@ -50,7 +50,7 @@ CREATE TABLE "comments"(
     "createdAt" TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE "share"(
+CREATE TABLE "shared"(
     "id" SERIAL PRIMARY KEY NOT NULL,
     "postId" INTEGER REFERENCES "posts"("id") NOT NULL,
     "repostUserId" INTEGER REFERENCES "users"("id") NOT NULL,
