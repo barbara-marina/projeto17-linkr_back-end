@@ -5,6 +5,7 @@ import timelineRouter from "./timelineRouter.js";
 import hashtagRouter from "./hashtagRouter.js";
 import usersRouter from "./usersRouter.js";
 import likeRouter from "./likeRouter.js";
+import postRouter from "./postRouter.js";
 
 const router = Router();
 
@@ -13,5 +14,6 @@ router.use(timelineRouter);
 router.use(hashtagRouter);
 router.use(usersRouter);
 router.use(likeRouter);
+router.use(postRouter);
 
 export default router;
