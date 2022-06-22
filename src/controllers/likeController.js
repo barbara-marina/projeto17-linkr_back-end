@@ -1,5 +1,5 @@
 import likeRepository from "../repositories/likeRepository.js";
-//import timelineRepository from "../repositories/timelineRepository.js";
+import timelineRepository from "../repositories/timelineRepository.js";
 
 export async function checkLiked(req, res){
 
@@ -47,6 +47,23 @@ export async function createDislike(req, res){
 
         await likeRepository.deleteLikeUserPost(userId, postId);
         res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+}
+
+export async function getLikesPost(req, res){
+    const {id} = req.params;
+    try {
+        const posts = await timelineRepository.getPostById(Number(id));
+        const [postId] = posts.rows;
+
+        const verifyPost = !postId || posts.rowCount !== 1 || postId.id !== Number(id) || postId.deleted;
+        if(verifyPost) return res.sendStatus(401);
+
+        const likesPost = await likeRepository.getLikesPostId(Number(id)); 
+        res.send(likesPost.rows).status(200);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);

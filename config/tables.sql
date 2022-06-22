@@ -63,3 +63,6 @@ CREATE TABLE "followers"(
     "following" INTEGER REFERENCES "users"("id") NOT NULL,
     "createdAt" TIMESTAMP DEFAULT NOW()
 );
+
+
+

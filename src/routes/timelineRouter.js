@@ -9,7 +9,7 @@ import schemaPostEdited from "../schemas/schemaPostEdited.js";
 const timelineRouter = Router();
 
 timelineRouter.post('/timeline', schemasValidations(schemaPost), validationToken, createPublication);
-timelineRouter.get('/timeline', getPublications);
+timelineRouter.get('/timeline/:userId', getPublications);
 timelineRouter.put('/timeline/:id', schemasValidations(schemaPostEdited), validationToken, updatePublication);
 timelineRouter.delete('/timeline/:id', validationToken, deletePublication);
 timelineRouter.get('/timeline/open/:id', getPostRedirect);
