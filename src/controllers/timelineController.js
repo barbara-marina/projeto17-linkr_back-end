@@ -41,14 +41,24 @@ export async function createPublication(req, res){
 }
 
 export async function getPublications(req, res){
+
+    const { userId } = req.params;
+
     try {
         const result = await timelineRepository.getPosts(false);
         const likeUser = await timelineRepository.likesUsersPost();
+        const posts = [];
 
-        res.status(200).send({
-            posts: result.rows,
-            usersLikes: likeUser.rows
-        });
+        for(let post of result.rows){
+
+            const iLiked = likeUser.rows.some( element => element.userId == parseInt(userId) && element.postId == post.id )
+            const whoLiked = likeUser.rows.filter(element => element.postId == post.id);
+            const thePost = {iLiked:iLiked, whoLiked:whoLiked, post:post}
+            posts.push(thePost);
+
+        }
+
+        res.status(200).send(posts);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
