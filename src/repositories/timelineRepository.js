@@ -1,6 +1,8 @@
 import db from "../../config/db.js";
 
 function getHashtagsInDescription(str){
+    if(!str) return [];
+
     const arrStr = str.toLowerCase().split(' ');
     const arrHashtags = arrStr.filter(item => item.startsWith('#'));
     
