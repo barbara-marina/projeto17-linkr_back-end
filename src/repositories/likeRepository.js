@@ -19,10 +19,19 @@ async function deleteLikeUserPost(userId, postId){
     `, [userId, postId]);
 }
 
+async function getLikesPostId(postId){
+    return db.query(`
+        SELECT l.*, u.username FROM "likes" l 
+        JOIN "users" u ON l."userId" = u.id
+        WHERE l."postId" = $1
+        `, [postId]);
+}
+    
 const likeRepository = {
     getLikeUserPost,
     insertLikeUserPost,
-    deleteLikeUserPost
+    deleteLikeUserPost,
+    getLikesPostId
 };
 
 export default likeRepository;
