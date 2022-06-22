@@ -1,6 +1,8 @@
 import db from "../../config/db.js";
 
 function getHashtagsInDescription(str){
+    if(!str) return [];
+
     const arrStr = str.toLowerCase().split(' ');
     const arrHashtags = arrStr.filter(item => item.startsWith('#'));
     
@@ -37,7 +39,7 @@ async function getPosts(boolean){
         JOIN "users" u ON p."userId" = u."id"
         WHERE p."deleted" = $1
         GROUP BY p."id", u."id"
-        ORDER BY p."createdAt" DESC LIMIT 20
+        ORDER BY p."createdAt" DESC LIMIT 10
     `, [boolean]);
 }
 
