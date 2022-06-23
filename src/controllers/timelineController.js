@@ -1,4 +1,5 @@
 import urlMetadata from "url-metadata";
+import db from "../../config/db.js";
 
 import timelineRepository from "../repositories/timelineRepository.js";
 
@@ -136,6 +137,19 @@ export async function getPostRedirect(req, res){
         if(verifyPostRedirect) return res.sendStatus(401);
         
         res.redirect(postId.url);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+}
+
+export async function getAllPosts(req, res){
+    try {
+        const resultPosts = await db.query(`
+            SELECT * FROM "posts" WHERE "deleted" = FALSE
+        `, []);
+        
+        res.send(resultPosts.rows).status(200);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
