@@ -61,8 +61,8 @@ CREATE TABLE "followers"(
     "id" SERIAL PRIMARY KEY NOT NULL,
     "userId" INTEGER REFERENCES "users"("id") NOT NULL,
     "following" INTEGER REFERENCES "users"("id") NOT NULL,
-    "createdAt" TIMESTAMP DEFAULT NOW()
+    "createdAt" TIMESTAMP DEFAULT NOW(),
+    UNIQUE("userId","following")
 );
-
 
 
