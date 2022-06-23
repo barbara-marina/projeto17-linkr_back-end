@@ -7,8 +7,16 @@ async function sharePost(postId, userId){
     `, [postId, userId]);
 }
 
+async function countShare(postId){
+    return db.query(`
+        SELECT COUNT("postId")
+        FROM shared
+        WHERE "postId"=$1
+    `, [postId]);
+}
+
 const postRepository = {
-    sharePost
+    sharePost, countShare
 }
 
 export default postRepository;
