@@ -19,8 +19,7 @@ export async function sharePost(req, res){
 export async function countShare(req, res){
     const { postId } = req.params;
 
-    try {
-        
+    try {       
         const count = await postRepository.countShare(postId);
 
         res.send(count.rows)

@@ -1,4 +1,5 @@
 import urlMetadata from "url-metadata";
+import db from "../../config/db.js";
 import postRepository from "../repositories/postRepository.js";
 
 import timelineRepository from "../repositories/timelineRepository.js";
@@ -48,13 +49,15 @@ export async function getPublications(req, res){
     try {
         const result = await timelineRepository.getPosts(false);
         const likeUser = await timelineRepository.likesUsersPost();
+        const wasShared = await postRepository.shares();
         const posts = [];
 
         for(let post of result.rows){
 
-            const iLiked = likeUser.rows.some( element => element.userId == parseInt(userId) && element.postId == post.id )
+            const iLiked = likeUser.rows.some(element => element.userId == parseInt(userId) && element.postId == post.id)
             const whoLiked = likeUser.rows.filter(element => element.postId == post.id);
-            const thePost = {iLiked:iLiked, whoLiked:whoLiked, post:post}
+            const whoShared = wasShared.rows.filter(element => element.postId === post.id)
+            const thePost = {iLiked:iLiked, whoLiked:whoLiked, whoShared:whoShared, post:post}
             posts.push(thePost);
 
         }
@@ -137,6 +140,19 @@ export async function getPostRedirect(req, res){
         if(verifyPostRedirect) return res.sendStatus(401);
         
         res.redirect(postId.url);
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+}
+
+export async function getAllPosts(req, res){
+    try {
+        const resultPosts = await db.query(`
+            SELECT * FROM "posts" WHERE "deleted" = FALSE
+        `, []);
+        
+        res.send(resultPosts.rows).status(200);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);
