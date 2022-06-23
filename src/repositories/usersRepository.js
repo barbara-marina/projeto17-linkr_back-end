@@ -1,19 +1,22 @@
 import db from "../../config/db.js";
 
+function getUserData(id) {
+    return db.query(`
+        SELECT username, picture
+        FROM users
+        WHERE id=$1;
+    `, [id]);
+}
+
 function getPostsByUserId(id) {
     return db.query(`
-        SELECT u.id, u.username, u.picture, JSON_AGG(post) AS "userPosts"
+        SELECT p.*, u.username, u.picture, COUNT(l."postId") AS "likes"
         FROM users u
-        LEFT JOIN (SELECT p.*, COUNT(l."postId") AS "likes"
-            FROM posts p
-            LEFT JOIN likes l ON l."postId" = p.id
-            WHERE "deleted"=$1
-            GROUP BY p.id
-            ORDER BY p."createdAt" DESC LIMIT 20)
-        AS post
-        ON post."userId"=u.id
-        WHERE  u.id=$2
-        GROUP BY (u.username, u.id);
+        LEFT JOIN posts p ON p."userId" = u.id
+        LEFT JOIN likes l ON l."postId" = p.id
+        WHERE "deleted"=$1 AND u.id = $2
+        GROUP BY l."postId", p.id, u.username, u.picture
+        ORDER BY p."createdAt" DESC LIMIT 20;
         `, [false, id]);
 }
 
@@ -26,6 +29,7 @@ function listUsers(username) {
 }
 
 const usersRepository = {
+    getUserData,
     getPostsByUserId,
     listUsers,
 };
