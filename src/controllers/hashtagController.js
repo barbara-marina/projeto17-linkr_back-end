@@ -1,4 +1,5 @@
 import hashtagRepository from "../repositories/hashtagRepository.js";
+import postRepository from "../repositories/postRepository.js";
 import timelineRepository from "../repositories/timelineRepository.js";
 
 export async function getHashtags(req, res){
@@ -21,26 +22,24 @@ export async function getHashtagPosts(req, res){
     try {
         const { user } = res.locals;
 
-        const likeUser = await timelineRepository.likesUsersPost();
         const result = await hashtagRepository.getHashtagPosts(hashtag);
-
+        const likeUser = await timelineRepository.likesUsersPost();
+        const wasShared = await postRepository.shares();
         const posts = [];
 
         for(let post of result.rows){
 
             const iLiked = likeUser.rows.some( element => element.userId == parseInt(user) && element.postId == post.id )
             const whoLiked = likeUser.rows.filter(element => element.postId == post.id);
-            const thePost = {iLiked:iLiked, whoLiked:whoLiked, post:post}
+            const whoShared = wasShared.rows.filter(element => element.postId === post.id)
+            const thePost = {iLiked:iLiked, whoLiked:whoLiked, whoShared:whoShared, post:post}
             posts.push(thePost);
 
         }
 
-        console.log(posts);
-
-
         if (posts.rowCount === 0) return res.sendStatus(404);
  
-        res.send(posts);
+        res.status(200).send(posts);
         
     } catch (error) {
         res.status(500).send(error);       

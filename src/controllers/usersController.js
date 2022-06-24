@@ -7,12 +7,11 @@ async function getPostsByUserId(req, res) {
 
     try {
         const userData = await usersRepository.getUserData(parseInt(id));
+        if (userData.rowCount === 0) return res.status(404).send("Usuário não existe.");
 
         const findConection = await usersRepository.imFollowing(userId, id);
         let imFollowing = false;
         if ( findConection.rowCount === 1 ) imFollowing = true;
-        
-        if (userData.rowCount === 0) return res.status(404).send("Usuário não existe.");
         
         const result = await usersRepository.getPostsByUserId(parseInt(id));
         const likeUser = await timelineRepository.likesUsersPost();
@@ -24,6 +23,7 @@ async function getPostsByUserId(req, res) {
             const whoLiked = likeUser.rows.filter(element => element.postId == post.id);
             const whoShared = [];
             const thePost = {iLiked:iLiked, whoLiked:whoLiked, post:post, whoShared:whoShared}
+
             posts.push(thePost);
 
         }
