@@ -1,3 +1,5 @@
+import commentsRepository from "../repositories/commentsRepository.js";
+import postRepository from "../repositories/postRepository.js";
 import timelineRepository from "../repositories/timelineRepository.js";
 import usersRepository from "../repositories/usersRepository.js";
 
@@ -12,13 +14,29 @@ async function getPostsByUserId(req, res) {
         
         const result = await usersRepository.getPostsByUserId(parseInt(id));
         const likeUser = await timelineRepository.likesUsersPost();
+        const wasShared = await postRepository.shares();
+        const commentsResult = await commentsRepository.getComments(parseInt(userId));
+        commentsResult.rows.forEach(element => {
+            element.postComments.forEach(e => {
+                if(e.isMyFollowing !== true){
+                    e.isMyFollowing = false;
+                }
+                console.log(e)
+            })
+        });
+
         const posts = [];
 
         for(let post of result.rows){
 
             const iLiked = likeUser.rows.some( element => element.userId == parseInt(userId) && element.postId == post.id )
             const whoLiked = likeUser.rows.filter(element => element.postId == post.id);
-            const thePost = {iLiked:iLiked, whoLiked:whoLiked, post:post}
+            const whoShared = wasShared.rows.filter(element => element.postId === post.id)
+            const comments = [];
+            commentsResult.rows.forEach(element => {
+                element.postComments.forEach(e => e.postId === post.id && comments.push(e))
+            });
+            const thePost = {iLiked:iLiked, whoLiked:whoLiked, whoShared:whoShared, comments:comments,post:post}
             posts.push(thePost);
 
         }
