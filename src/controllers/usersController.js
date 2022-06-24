@@ -57,10 +57,13 @@ async function getPostsByUserId(req, res) {
 
 async function listUsers(req, res) {
     
-    const { username } = req.params;
+    const { userId, username } = req.params;
+
+    console.log(typeof(userId))
+
 
     try {
-        const data = await usersRepository.listUsers(username);
+        const data = await usersRepository.listUsers(parseInt(userId), username);
         res.send(data.rows);
     } catch(error) {
         console.log(error);
