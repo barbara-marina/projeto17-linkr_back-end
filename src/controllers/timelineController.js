@@ -1,7 +1,7 @@
 import urlMetadata from "url-metadata";
+
 import db from "../../config/db.js";
 import postRepository from "../repositories/postRepository.js";
-
 import timelineRepository from "../repositories/timelineRepository.js";
 
 export async function createPublication(req, res){
