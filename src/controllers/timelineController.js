@@ -1,5 +1,6 @@
 import urlMetadata from "url-metadata";
 import db from "../../config/db.js";
+import commentsRepository from "../repositories/commentsRepository.js";
 import postRepository from "../repositories/postRepository.js";
 
 import timelineRepository from "../repositories/timelineRepository.js";
@@ -49,6 +50,16 @@ export async function getPublications(req, res){
         const result = await timelineRepository.getPosts(Number(userId), false);
         const likeUser = await timelineRepository.likesUsersPost();
         const wasShared = await postRepository.shares();
+        const commentsResult = await commentsRepository.getComments(parseInt(userId));
+        commentsResult.rows.forEach(element => {
+            element.postComments.forEach(e => {
+                if(e.isMyFollowing !== true){
+                    e.isMyFollowing = false;
+                }
+                console.log(e)
+            })
+        });
+
         const posts = [];
 
         for(let post of result.rows){
@@ -56,7 +67,11 @@ export async function getPublications(req, res){
             const iLiked = likeUser.rows.some(element => element.userId == parseInt(userId) && element.postId == post.id)
             const whoLiked = likeUser.rows.filter(element => element.postId == post.id);
             const whoShared = wasShared.rows.filter(element => element.postId === post.id)
-            const thePost = {iLiked:iLiked, whoLiked:whoLiked, whoShared:whoShared, post:post}
+            const comments = [];
+            commentsResult.rows.forEach(element => {
+                element.postComments.forEach(e => e.postId === post.id && comments.push(e))
+            });
+            const thePost = {iLiked:iLiked, whoLiked:whoLiked, whoShared:whoShared, comments:comments,post:post}
             posts.push(thePost);
 
         }
