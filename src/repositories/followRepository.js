@@ -8,6 +8,13 @@ function follow(userId, userToFollow){
 
 }
 
-const followRepository = { follow }
+function unFollow(userId, userToUnFollow){
+
+    return db.query(`DELETE FROM followers f
+                        WHERE f."userId" = $1 AND f."following" = $2`,
+                        [userId, userToUnFollow]);
+}
+
+const followRepository = { follow, unFollow}
 
 export default followRepository;

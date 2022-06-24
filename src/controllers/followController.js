@@ -16,3 +16,21 @@ export async function follow (req, res){
     }
 
 }
+
+export async function unFollow(req, res){
+
+    const {userId, userTounFollow } = req.params;
+
+    try {
+        
+        const unfollow = await followRepository.unFollow(userId, userTounFollow);
+        res.sendStatus(204);
+
+    } catch (error) {
+        res.sendStatus(500)
+        console.log(error)
+    }
+
+
+}
+
