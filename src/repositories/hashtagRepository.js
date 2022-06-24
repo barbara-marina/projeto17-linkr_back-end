@@ -17,9 +17,11 @@ function getHashtags(){
 function getHashtagPosts(hashtag){
     return db.query(`
         SELECT p.*, u.id AS "userId", u.username, u.picture,
-        COUNT(l."postId") AS "likes"
+        COUNT(l."postId") AS "likes",
+        COUNT(c."postId") AS "comments"
         FROM "posts" p
         LEFT JOIN "likes" l ON l."postId" = p."id"
+        LEFT JOIN "comments" c ON c."postId" = p."id"
         JOIN "users" u ON p."userId" = u."id"
         WHERE description ILIKE $1
         GROUP BY p."id", u."id"
