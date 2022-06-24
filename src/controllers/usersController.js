@@ -7,8 +7,11 @@ async function getPostsByUserId(req, res) {
 
     try {
         const userData = await usersRepository.getUserData(parseInt(id));
-        
         if (userData.rowCount === 0) return res.status(404).send("Usuário não existe.");
+
+        const findConection = await usersRepository.imFollowing(userId, id);
+        let imFollowing = false;
+        if ( findConection.rowCount === 1 ) imFollowing = true;
         
         const result = await usersRepository.getPostsByUserId(parseInt(id));
         const likeUser = await timelineRepository.likesUsersPost();
@@ -18,19 +21,17 @@ async function getPostsByUserId(req, res) {
 
             const iLiked = likeUser.rows.some( element => element.userId == parseInt(userId) && element.postId == post.id )
             const whoLiked = likeUser.rows.filter(element => element.postId == post.id);
-            const thePost = {iLiked:iLiked, whoLiked:whoLiked, post:post}
+            const whoShared = [];
+            const thePost = {iLiked:iLiked, whoLiked:whoLiked, post:post, whoShared:whoShared}
+
             posts.push(thePost);
 
         }
 
-        console.log({
-            userData: userData.rows[0],
-            posts: posts
-        });
-        
         res.send({
             userData: userData.rows[0],
-            posts: posts
+            posts: posts,
+            imFollowing: imFollowing
         });
     } catch(error) {
         console.log(error);

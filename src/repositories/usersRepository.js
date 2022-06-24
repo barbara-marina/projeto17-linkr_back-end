@@ -2,10 +2,10 @@ import db from "../../config/db.js";
 
 function getUserData(id) {
     return db.query(`
-        SELECT username, picture
+        SELECT username, picture, id
         FROM users
         WHERE id=$1;
-    `, [id]);
+     `, [id]);
 }
 
 function getPostsByUserId(id) {
@@ -25,13 +25,23 @@ function listUsers(username) {
         SELECT u.id, u.username, u.picture
         FROM users u
         WHERE u.username ILIKE $1;
-    `, [(username + "%")]);
+    `, [("%"+ username + "%")]);
+}
+function imFollowing(userId, anotherUserId){
+    
+    return db.query(`
+            SELECT * 
+            FROM followers f
+            WHERE f."userId" = $1 AND f.following = $2`,
+            [userId, anotherUserId]);
+
 }
 
 const usersRepository = {
     getUserData,
     getPostsByUserId,
     listUsers,
+    imFollowing
 };
 
 export default usersRepository;
