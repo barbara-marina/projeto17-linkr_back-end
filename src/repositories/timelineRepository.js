@@ -32,7 +32,7 @@ async function insertHashtag(postId, hashtag){
 
 async function getPosts(userId, boolean){
     return db.query(`
-        SELECT p.*, u.id AS "userId", u.username,
+        SELECT p.*, u.id AS "userId", u.username, u.picture,
         COUNT(l."postId") AS "likes"
         FROM "posts" p
         LEFT JOIN "likes" l ON l."postId" = p."id"
