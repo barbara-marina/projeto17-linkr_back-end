@@ -15,6 +15,12 @@ function unFollow(userId, userToUnFollow){
                         [userId, userToUnFollow]);
 }
 
-const followRepository = { follow, unFollow}
+async function getFollowingUser(userId){
+    return db.query(`
+        SELECT * FROM "followers" f WHERE f."userId" = $1
+    `, [userId]);
+}
+
+const followRepository = { follow, unFollow, getFollowingUser}
 
 export default followRepository;

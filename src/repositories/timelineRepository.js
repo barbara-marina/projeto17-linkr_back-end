@@ -30,18 +30,21 @@ async function insertHashtag(postId, hashtag){
     `, [postId, hashtag]);
 }
 
-async function getPosts(boolean){
+async function getPosts(userId, boolean){
     return db.query(`
-    SELECT p.*, u.id AS "userId", u.username, u.picture,
-    COUNT(l."postId") AS "likes", COUNT(c."postId") AS "comments"
-    FROM "posts" p
-    LEFT JOIN "likes" l ON l."postId" = p."id"
-    LEFT JOIN "comments" c ON c."postId" = p."id"
-    JOIN "users" u ON p."userId" = u."id"
-    WHERE p."deleted" = $1
-    GROUP BY p."id", u."id"
-    ORDER BY p."createdAt" DESC LIMIT 10
-    `, [boolean]);
+        SELECT p.*, u.id AS "userId", u.username,
+        COUNT(l."postId") AS "likes"
+        FROM "posts" p
+        LEFT JOIN "likes" l ON l."postId" = p."id"
+        JOIN (
+           select * from "followers" where "userId" = $1
+        ) AS tst
+           ON tst."following" = p."userId"
+        JOIN "users" u ON p."userId" = u."id"
+        WHERE p."deleted" = $2
+        GROUP BY p."id", u."id", tst."id", tst."userId", tst.following
+        ORDER BY p."createdAt"
+    `, [userId, boolean]);
 }
 
 async function getPostByUrl(url, userId){
