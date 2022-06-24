@@ -32,18 +32,44 @@ async function insertHashtag(postId, hashtag){
 
 async function getPosts(userId, boolean){
     return db.query(`
-        SELECT p.*, u.id AS "userId", u.username, u.picture,
-        COUNT(l."postId") AS "likes"
-        FROM "posts" p
-        LEFT JOIN "likes" l ON l."postId" = p."id"
-        JOIN (
-           select * from "followers" where "userId" = $1
-        ) AS tst
-           ON tst."following" = p."userId"
-        JOIN "users" u ON p."userId" = u."id"
-        WHERE p."deleted" = $2
-        GROUP BY p."id", u."id", tst."id", tst."userId", tst.following
-        ORDER BY p."createdAt"
+    (SELECT p.id, p."userId", p.url, p."description", 
+ p."urlMetadata", p."descriptionMetadata", p."image", p."title", p.deleted, p."createdAt",
+ u.username, u.picture, null AS "repostUserId",
+COUNT(l."postId") AS "likes"
+FROM "posts" p
+LEFT JOIN "likes" l ON l."postId" = p."id"
+JOIN (
+   select * from "followers" where "userId" = $1
+) AS tst
+   ON tst."following" = p."userId"
+LEFT JOIN (
+    select * from "shared" s
+) AS rpt
+    ON tst."following" = rpt."repostUserId"
+JOIN "users" u ON p."userId" = u."id"
+WHERE p."deleted" = $2 
+GROUP BY p."id", u."id", tst."id", tst."userId", tst.following
+ORDER BY p."createdAt")
+UNION
+(SELECT p.id, p."userId", p.url, p."description", 
+ p."urlMetadata", p."descriptionMetadata", p."image", p."title", p.deleted, p."createdAt",
+ u.username,u.picture,s."repostUserId",
+COUNT(l."postId") AS "likes"
+FROM shared s
+JOIN posts p ON p.id = s."postId"
+JOIN "users" u ON u."id" = p."userId"
+LEFT JOIN "likes" l ON l."postId" = p."id"
+JOIN (
+    SELECT * FROM "followers" f WHERE f."userId" = $1
+) AS tst
+    ON tst."following" = s."repostUserId"
+WHERE p."deleted" = $2
+GROUP BY p."id", u."id", tst."id", tst."userId", tst.following, s."repostUserId"
+ORDER BY p."createdAt")
+
+ORDER BY "createdAt" DESC
+LIMIT 20
+    
     `, [userId, boolean]);
 }
 
