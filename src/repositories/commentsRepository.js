@@ -14,8 +14,9 @@ function getComments(userId) {
     FROM posts p
     JOIN (
         SELECT c."postId", c."userId", u.username,u.picture, c.comment,
-        "userFollowers".following = c."userId" AS "isMyFollowing", c."userId"=$1 AS "isMe"
+        "userFollowers".following = c."userId" AS "isMyFollowing", p."userId"=c."userId" AS "isMe"
         FROM comments c
+        JOIN posts p ON p.id=c."postId" 
         JOIN users u 
         LEFT JOIN (
             SELECT * 
@@ -24,7 +25,7 @@ function getComments(userId) {
         ) AS "userFollowers"
         ON "userFollowers".following = u.id
         ON u.id = c."userId" 
-        ORDER BY c."createdAt" DESC
+        ORDER BY c."createdAt"
     ) AS teste
     ON teste."postId" = p.id
     GROUP BY p.id;

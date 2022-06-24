@@ -32,7 +32,6 @@ export async function getHashtagPosts(req, res){
                 if(e.isMyFollowing !== true){
                     e.isMyFollowing = false;
                 }
-                console.log(e)
             })
         });
 

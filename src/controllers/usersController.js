@@ -24,7 +24,6 @@ async function getPostsByUserId(req, res) {
                 if(e.isMyFollowing !== true){
                     e.isMyFollowing = false;
                 }
-                console.log(e)
             })
         });
 
