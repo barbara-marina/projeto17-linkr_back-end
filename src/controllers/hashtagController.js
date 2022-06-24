@@ -18,14 +18,13 @@ export async function getHashtags(req, res){
 
 export async function getHashtagPosts(req, res){
     const { hashtag } = req.params;
+    const { user } = res.locals;
 
     try {
-        const { user } = res.locals;
-
         const result = await hashtagRepository.getHashtagPosts(hashtag);
         const likeUser = await timelineRepository.likesUsersPost();
         const wasShared = await postRepository.shares();
-        const commentsResult = await commentsRepository.getComments(parseInt(user));
+        const commentsResult = await commentsRepository.getComments(parseInt(user.id));
         commentsResult.rows.forEach(element => {
             element.postComments.forEach(e => {
                 if(e.isMyFollowing !== true){

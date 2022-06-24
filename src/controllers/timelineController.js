@@ -71,10 +71,10 @@ export async function getPublications(req, res){
             commentsResult.rows.forEach(element => {
                 element.postComments.forEach(e => e.postId === post.id && comments.push(e))
             });
-            const thePost = {iLiked:iLiked, whoLiked:whoLiked, whoShared:whoShared, comments:comments,post:post}
+            const thePost = {iLiked:iLiked, whoLiked:whoLiked, whoShared:whoShared, comments:comments, post:post}
             posts.push(thePost);
 
-        }
+        } 
 
         res.status(200).send(posts);
     } catch (error) {
