@@ -43,11 +43,10 @@ export async function createPublication(req, res){
 }
 
 export async function getPublications(req, res){
-
     const { userId } = req.params;
 
     try {
-        const result = await timelineRepository.getPosts(false);
+        const result = await timelineRepository.getPosts(Number(userId), false);
         const likeUser = await timelineRepository.likesUsersPost();
         const wasShared = await postRepository.shares();
         const posts = [];
