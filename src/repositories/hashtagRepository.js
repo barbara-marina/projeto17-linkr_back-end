@@ -26,9 +26,10 @@ function getHashtagPosts(hashtag){
         WHERE description ILIKE $1
         GROUP BY p."id", u."id"
         ORDER BY p."createdAt" DESC LIMIT 20
+
     `, [(`%#${hashtag}%`)]);
 }
 
-const hashtagRepository =  { getHashtags, getHashtagPosts }
+const hashtagRepository = { getHashtags, getHashtagPosts }
 
 export default hashtagRepository;

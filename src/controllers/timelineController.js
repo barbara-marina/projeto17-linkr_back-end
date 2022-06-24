@@ -51,6 +51,7 @@ export async function getPublications(req, res){
         const likeUser = await timelineRepository.likesUsersPost();
         const wasShared = await postRepository.shares();
         const commentsResult = await commentsRepository.getComments(parseInt(userId));
+        
         commentsResult.rows.forEach(element => {
             element.postComments.forEach(e => {
                 if(e.isMyFollowing !== true){

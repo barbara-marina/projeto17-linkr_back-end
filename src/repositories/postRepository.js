@@ -15,6 +15,10 @@ async function shares(){
     `)
 }
 
+async function repostedByFollowers(){
+    
+}
+
 const postRepository = {
     sharePost, shares
 }
